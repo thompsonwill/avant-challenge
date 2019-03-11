@@ -1,0 +1,15 @@
+{
+  "name": "avant-challenge",
+  "version": "1.0.0",
+  "description": "This is the coding challenge for Avant's New Grad program for Software Engineers",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Will Thompson",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.24.0"
+  }
+}
