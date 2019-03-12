@@ -7,16 +7,27 @@
 # Main Functionality
 
     # Create a new account (open credit card)
+        
 
-    DB STRUCTURE
-        - Owner (name - first & last)
-        - Credit Limit
+    DB STRUCTURE - Card
+        - ID
+        - Card Number (Foreign key to Owner Table)
+        - Credit limit
         - APR (Calculated daily but due every 30 days after opening)
-        - Date opened
-        - Payments (Date made, amount)
-        - Charges (Date made, amount)
         - Balance (outstanding and adds interest)
+        - Payments (amount, timestamp)
+        - Charges (amount, timestamp)
+
+    Calculate the amount of days between first and next charges/payments
 
     # Keep track of charges (swipes)
-    # Keep track of payments
-    # Provide total outstanding balance on each day
+        - Select an account
+        - PROMPT: Would you like to:
+            * Make a payment - subtract amount from balance, adjust APR equation
+            * Make a purchase - Add amount to balance, adjust APR
+
+    # Provide total outstanding balance on any given day
+
+    # Create function that calculates interest also take any payments or additional charges made (when you check the balance, see if the % modulous of the total days open is 0 when you divide 30) 
+
+## Insert users into the database with historical data to showcase functionality.
