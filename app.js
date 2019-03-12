@@ -80,6 +80,16 @@ var makePurchase = function (cardID, purchaseAmt) {
         });
 }
 
+// Let's make a payment
+var makePayment = function (cardID, purchaseAmt) {
+    connection.query("INSERT INTO transactions SET amount = ?, ownerID = ?",
+        [purchaseAmt, cardID],
+        function (err, res) {
+            if (err) throw err;
+            console.log("New Payment Recorded!");
+            startApp();
+        });
+}
 
 /*
 Create a new credit card with a FAKE generated CC number
@@ -159,8 +169,29 @@ var startApp = function () {
                 break;
 
             case "Make a Payment":
-                console.log("Make a Payment");
-                decreaseBalance(5, 10);
+                                // First show the cards to the user
+                                showCards();
+
+                                // Prompt users for which card to choose
+                                inquirer.prompt([
+                                    {
+                                        name: "cardID",
+                                        type: "input",
+                                        // If only buying something was this easy
+                                        message: "\nEnter the ID for the card you would like to make a purchase with: \n \n"
+                                    },
+                                    {
+                                        name: "purchaseAmt",
+                                        type: "input",
+                                        message: "How big of a purchase do you want to make? Enter a dollar amount: "
+                                    }
+                                ]).then(function (ans) {
+                
+                                    // Update the new balance (not the shoes)
+                                   decreaseBalance(ans.cardID, ans.purchaseAmt);
+                
+                                    makePayment(ans.cardID, inputToDollar(ans.purchaseAmt));
+                                });
                 break;
 
 
