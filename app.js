@@ -7,6 +7,13 @@ var connection = require("./db/db.js");
 // Generate FAKE CC numbers for new accounts. 
 var generator = require('creditcard-generator');
 
+// Helps with my mysql queries and stories the returned data
+var async = require('async');
+
+// Attempting to store the results for balance in a variable
+var results = [];
+
+
 // Connect to db
 connection.connect(function (err) {
     if (err) throw err;
@@ -46,32 +53,73 @@ var getTransactions = function (cardID) {
         });
 }
 
+
+
+function getBalance(cardID, callback){
+    connection.query('SELECT balance FROM card WHERE id = ?', [cardID], function(err, result)
+    {
+        if (err) 
+            callback(err,null);
+        else
+            callback(null,result[0].balance);
+
+    });
+}
+
+var sendBalance = function(data){
+    results.push(data);
+}
+
+
+getBalance(5, function(err,data){
+        if (err) {
+            // error handling code goes here
+            console.log("ERROR : ",err);            
+        } else {            
+            // code to execute on data retrieval
+            console.log("result from db is : ",data);
+            sendBalance(data);  
+        }    
+});
+
+console.log("THIS IS THE BAL RESULTS VARIABLE " + results);
+
+/* These lines are where I went deep into testing the getBalance functions
+var balanceVar = "";
+
+var setValue = function(value){
+    balanceVar = value;
+}
+
 // Query db to get card's balance so we can update it when purcahses or payments are made
 var getBalance = function (cardID, callback) {
     var query = "SELECT balance FROM card WHERE id = ?";
-    connection.query(query, [cardID], callback);
+    connection.query(query, [cardID],  function(err, res){
+        console.log("THIS IS THE RES YEARD ME " + res[0].balance);
+        balanceVar = res[0].balance;
+    });
 }
 
 // This is a demo of getBalance()
-/* 
 getBalance(5, function(err, res){
-    console.log("THIS IS THE GET BALANCE OF ALL GET BALANCES " + res[0].balance);
-    var balance = res[0].balance
-    return balance;
+    setValue(res[0].balance);
+    console.log("THIS IS THE RES YEARD ME " + res[0].balance);
 });
+
+console.log(balanceVar + "This is the BALANCE VAR");
 */
 
 
 
+
 // Send the new balance of the card to the database
-var updateBalance = function (cardID, newAmt) {
-    connection.query("UPDATE card set balance = " + newAmt + " WHERE id = ?",
-        [cardID],
-        function (err, res) {
-            if (err) throw err;
-            console.log("New Balance Recorded!");
-            startApp();
-        });
+var updateBalance = function (cardID, purchaseAmt) {
+    connection.query("UPDATE card SET balance = balance + ? WHERE id = ?",
+    [purchaseAmt, cardID],
+    function (err, res) {
+        if (err) throw err;
+        console.log("New Balance Recorded!");
+    });
 }
 
 
@@ -86,6 +134,7 @@ var makePurchase = function (cardID, purchaseAmt) {
             startApp();
         });
 }
+
 
 /*
 Create a new credit card with a FAKE generated CC number
@@ -156,20 +205,9 @@ var startApp = function () {
                         message: "How big of a purchase do you want to make? Enter a dollar amount: "
                     }
                 ]).then(function (ans) {
-                    // Get the current balance, store it in the variable
-                    getBalance(ans.cardID, function(err, res){
-                        var balance = parseInt(res[0].balance);
-                        var newBal = balance + inputToDollar(ans.purchaseAmt);
-                        return newBal;
-                    });
-                    
-                    // Create a variable, add the new purchase amt to current balance and store it.
-                    var newBal = 5 + inputToDollar(ans.purchaseAmt);
-
-                    console.log("THIS IS THE NEW BALANCE YEAH THE SHOE: " + newBal)
 
                     // Update the new balance (not the shoes)
-                    updateBalance(ans.cardID, newBal);
+                   updateBalance(ans.cardID, ans.purchaseAmt);
 
                     makePurchase(ans.cardID, inputToDollar(ans.purchaseAmt));
                 });

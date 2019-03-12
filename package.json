@@ -10,6 +10,7 @@
   "author": "Will Thompson",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.6.2",
     "creditcard-generator": "0.0.7",
     "inquirer": "^6.2.2",
     "mysql": "^2.16.0"
