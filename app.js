@@ -47,13 +47,23 @@ var getTransactions = function (cardID) {
 }
 
 
-// Send the new balance of the card to the database. Takes the current balance and adds the new value of the purchase
-var updateBalance = function (cardID, purchaseAmt) {
+// After a purchase increase balance
+var increaseBalance = function (cardID, purchaseAmt) {
     connection.query("UPDATE card SET balance = balance + ? WHERE id = ?",
     [purchaseAmt, cardID],
     function (err, res) {
         if (err) throw err;
-        console.log("New Balance Recorded!");
+        console.log("New Balance Recorded! Thank you for your purchase");
+    });
+}
+
+// After a payment decrease balance
+var decreaseBalance = function (cardID, purchaseAmt) {
+    connection.query("UPDATE card SET balance = balance - ? WHERE id = ?",
+    [purchaseAmt, cardID],
+    function (err, res) {
+        if (err) throw err;
+        console.log("New Balance Recorded! Thank you for your payment");
     });
 }
 
@@ -141,7 +151,7 @@ var startApp = function () {
                 ]).then(function (ans) {
 
                     // Update the new balance (not the shoes)
-                   updateBalance(ans.cardID, ans.purchaseAmt);
+                   increaseBalance(ans.cardID, ans.purchaseAmt);
 
                     makePurchase(ans.cardID, inputToDollar(ans.purchaseAmt));
                 });
@@ -149,6 +159,7 @@ var startApp = function () {
 
             case "Make a Payment":
                 console.log("Make a Payment");
+                decreaseBalance(5, 10);
                 break;
 
 
