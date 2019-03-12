@@ -163,8 +163,6 @@ var startApp = function () {
                         return newBal;
                     });
                     
-                    console.log(thisBalance + " THIS IS THIS BALANCE")
-
                     // Create a variable, add the new purchase amt to current balance and store it.
                     var newBal = 5 + inputToDollar(ans.purchaseAmt);
 
