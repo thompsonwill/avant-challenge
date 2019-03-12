@@ -14,8 +14,8 @@
 
 ## The software should be able to:
     X Create an account (e.g. opening a new credit card) X
-    Keep track of charges (e.g. card swipes)
-    Keep track of payments
+    X Keep track of charges (e.g. card swipes) X
+    X Keep track of payments X
     Provide the total outstanding balance as of any given day
 
 ## Test Scenario 1

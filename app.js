@@ -51,23 +51,25 @@ var getTransactions = function (cardID) {
 // After a purchase increase balance
 var increaseBalance = function (cardID, purchaseAmt) {
     connection.query("UPDATE card SET balance = balance + ? WHERE id = ?",
-    [purchaseAmt, cardID],
-    function (err, res) {
-        if (err) throw err;
-        console.log("New Balance Recorded! Thank you for your purchase");
-    });
+        [purchaseAmt, cardID],
+        function (err, res) {
+            if (err) throw err;
+            console.log("New Balance Recorded! Thank you for your purchase");
+        });
 }
 
 // After a payment decrease balance
 var decreaseBalance = function (cardID, purchaseAmt) {
     connection.query("UPDATE card SET balance = balance - ? WHERE id = ?",
-    [purchaseAmt, cardID],
-    function (err, res) {
-        if (err) throw err;
-        console.log("New Balance Recorded! Thank you for your payment");
-    });
+        [purchaseAmt, cardID],
+        function (err, res) {
+            if (err) throw err;
+            console.log("New Balance Recorded! Thank you for your payment");
+        });
 }
 
+
+// Consolidate the following two functions, validate for input
 
 // Let's make a purchase
 var makePurchase = function (cardID, purchaseAmt) {
@@ -105,6 +107,11 @@ var createCard = function (credLimit) {
             console.log("New Credit Card Created!");
             startApp();
         });
+}
+
+// Calculate Interest - 35% APR on all cards (based on the example given)
+var calcInterest = function(){
+    console.log("We're calculating interest");
 }
 
 
@@ -162,36 +169,36 @@ var startApp = function () {
                 ]).then(function (ans) {
 
                     // Update the new balance (not the shoes)
-                   increaseBalance(ans.cardID, ans.purchaseAmt);
+                    increaseBalance(ans.cardID, ans.purchaseAmt);
 
                     makePurchase(ans.cardID, inputToDollar(ans.purchaseAmt));
                 });
                 break;
 
             case "Make a Payment":
-                                // First show the cards to the user
-                                showCards();
+                // First show the cards to the user
+                showCards();
 
-                                // Prompt users for which card to choose
-                                inquirer.prompt([
-                                    {
-                                        name: "cardID",
-                                        type: "input",
-                                        // If only buying something was this easy
-                                        message: "\nEnter the ID for the card you would like to make a purchase with: \n \n"
-                                    },
-                                    {
-                                        name: "purchaseAmt",
-                                        type: "input",
-                                        message: "How big of a purchase do you want to make? Enter a dollar amount: "
-                                    }
-                                ]).then(function (ans) {
-                
-                                    // Update the new balance (not the shoes)
-                                   decreaseBalance(ans.cardID, ans.purchaseAmt);
-                
-                                    makePayment(ans.cardID, inputToDollar(ans.purchaseAmt));
-                                });
+                // Prompt users for which card to choose
+                inquirer.prompt([
+                    {
+                        name: "cardID",
+                        type: "input",
+                        // If only buying something was this easy
+                        message: "\nEnter the ID for the card you would like to make a purchase with: \n \n"
+                    },
+                    {
+                        name: "purchaseAmt",
+                        type: "input",
+                        message: "How big of a purchase do you want to make? Enter a dollar amount: "
+                    }
+                ]).then(function (ans) {
+
+                    // Update the new balance (not the shoes)
+                    decreaseBalance(ans.cardID, ans.purchaseAmt);
+
+                    makePayment(ans.cardID, inputToDollar(ans.purchaseAmt));
+                });
                 break;
 
 
