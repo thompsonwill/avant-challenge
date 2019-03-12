@@ -112,6 +112,9 @@ var createCard = function (credLimit) {
 // Calculate Interest - 35% APR on all cards (based on the example given)
 var calcInterest = function(){
     console.log("We're calculating interest");
+
+    
+
 }
 
 
