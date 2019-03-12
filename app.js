@@ -7,8 +7,6 @@ var connection = require("./db/db.js");
 // Generate FAKE CC numbers for new accounts. 
 var generator = require('creditcard-generator');
 
-// Helps with my mysql queries and stories the returned data
-var async = require('async');
 
 // Attempting to store the results for balance in a variable
 var results = [];
@@ -52,64 +50,6 @@ var getTransactions = function (cardID) {
             startApp();
         });
 }
-
-
-
-function getBalance(cardID, callback){
-    connection.query('SELECT balance FROM card WHERE id = ?', [cardID], function(err, result)
-    {
-        if (err) 
-            callback(err,null);
-        else
-            callback(null,result[0].balance);
-
-    });
-}
-
-var sendBalance = function(data){
-    results.push(data);
-}
-
-
-getBalance(5, function(err,data){
-        if (err) {
-            // error handling code goes here
-            console.log("ERROR : ",err);            
-        } else {            
-            // code to execute on data retrieval
-            console.log("result from db is : ",data);
-            sendBalance(data);  
-        }    
-});
-
-console.log("THIS IS THE BAL RESULTS VARIABLE " + results);
-
-/* These lines are where I went deep into testing the getBalance functions
-var balanceVar = "";
-
-var setValue = function(value){
-    balanceVar = value;
-}
-
-// Query db to get card's balance so we can update it when purcahses or payments are made
-var getBalance = function (cardID, callback) {
-    var query = "SELECT balance FROM card WHERE id = ?";
-    connection.query(query, [cardID],  function(err, res){
-        console.log("THIS IS THE RES YEARD ME " + res[0].balance);
-        balanceVar = res[0].balance;
-    });
-}
-
-// This is a demo of getBalance()
-getBalance(5, function(err, res){
-    setValue(res[0].balance);
-    console.log("THIS IS THE RES YEARD ME " + res[0].balance);
-});
-
-console.log(balanceVar + "This is the BALANCE VAR");
-*/
-
-
 
 
 // Send the new balance of the card to the database
