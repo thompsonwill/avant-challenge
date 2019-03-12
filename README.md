@@ -36,3 +36,4 @@
 
     (balance * .35 / 365 * dayUntilPaymentOrCharge) 
 
+Need to calculate interst between payments or purchases

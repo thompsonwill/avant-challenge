@@ -151,19 +151,40 @@ var createCard = function (credLimit) {
         });
 }
 
-// Calculate Interest - 35% APR on all cards (based on the example given)
-var calcInterest = function () {
-    console.log("We're calculating interest");
+var lastTransaction = function(ownerID){
+    connection.query("SELECT created_at FROM transactions WHERE ownerID = ?",
+        [ownerID], function (error, res) {
+            if (error) throw error;
 
-
-
+            res.forEach(function (res) {
+                console.log("LAST TRANSACTION: " + res.created_at);
+            });
+            
+        });
 }
 
+var getDifference = function(){
+    console.log("Getting the time difference");
+
+    
+}
+
+lastTransaction(2);
+
+// Calculate Interest - 35% APR on all cards (based on the example given)
+var calcInterest = function (balance, rate, days) {
+    console.log("We're calculating interest");
+    var interest = balance * (rate / 365) * 30;
+    var parsedFloat = parseFloat(interest);
+    var totalInt = (parsedFloat + balance);
+    return totalInt;
+}
+
+// Testing with $500 balance, .35 APR and 30 days.
+console.log(calcInterest(500, .35, 30));
 
 // Kick off the welcome screen and give initial prompts.
 var startApp = function () {
-
-
     inquirer.prompt([
         {
             name: "welcomePrompt",
