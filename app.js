@@ -16,20 +16,32 @@ connection.connect(function (err) {
 });
 
 
-var getInfo = function(){
+// This function displays the table with card info and does NOT restart the app. For display only.
+var showCards = function(){
     connection.query("SELECT * FROM card", function(error, res){
         if (error) throw error;
         console.table(res);
-        
-        // Restarts the app
+    });
+}
+
+// This displays the card table AND restarts the application.
+var viewCardsAndRestart = function(){
+    connection.query("SELECT * FROM card", function(error, res){
+        if (error) throw error;
+        console.table(res);
         startApp();
     });
 }
 
+var getTransactions = function(cardID){
+    console.log("This is the cardID: " + cardID);
+}
+
+
 /*
 Create a new credit card with a FAKE generated CC number
-Credit limit is determined by the prompt
-APR is always 35 (to be calculated to 35%)
+Credit limit is determined by the prompt - 3 options $1k, $5k, $10k
+APR is always 35 (35%)
 Balance starts as 0
 */
 var createCard = function (credLimit) {
@@ -55,13 +67,12 @@ var startApp = function () {
     ]).then(function (answer) {
         switch (answer.welcomePrompt) {
             case "Create an Account":
-
                 // Prompt for details to create account
                 inquirer.prompt([
                     {
                         name: "credLimit",
                         type: "list",
-                        choices: ["1,000", "5,000", "10,000"],
+                        choices: ["1000", "5000", "10000"],
                         message: "Select a credit limit for this card"
                     }
                 ]).then(function (ans) {
@@ -70,12 +81,30 @@ var startApp = function () {
                 });
                 break;
 
+                // Display all information for available cards
             case "View Cards":
-                getInfo();
+                viewCardsAndRestart();
                 break;
 
             case "View Transactions":
                 console.log("View transactions");
+
+                // First display the cards in a table so users know which card to select
+                
+                
+                // Prompt users for which card to choose
+                inquirer.prompt([
+                    {
+                        name: "cardID",
+                        type: "input",
+                        message: "\nEnter the ID for the card you would like inspect: \n \n"
+                    }
+                ]).then(function(ans){
+                    console.log(ans.cardID);
+                });
+
+                showCards();
+
                 break;
 
             case "Logout":
