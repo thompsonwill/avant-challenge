@@ -13,7 +13,7 @@
     e.g., asking for the total outstanding balance 15, 28, or 29 days after opening will give the outstanding balance, but asking for balance 30 days after opening will give the outstanding balance plus the accrued interest.
 
 ## The software should be able to:
-    Create an account (e.g. opening a new credit card)
+    X Create an account (e.g. opening a new credit card) X
     Keep track of charges (e.g. card swipes)
     Keep track of payments
     Provide the total outstanding balance as of any given day

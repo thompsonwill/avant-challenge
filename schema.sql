@@ -16,10 +16,13 @@ CREATE TABLE transactions(
     transID INTEGER(11) AUTO_INCREMENT NOT NULL,
     amount DECIMAL(5, 2) NOT NUll,
     ownerID INTEGER(11),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(transID),
     FOREIGN KEY (ownerID) REFERENCES card(id)
 );
 USE avant;
+SELECT * FROM transactions;
+SELECT * FROM card;
 
 INSERT INTO card (card_number, credit_limit, APR, balance)
 VALUES (4916057945040918, 10000, 35, 100);
@@ -27,9 +30,9 @@ VALUES (4916057945040918, 10000, 35, 100);
 
 INSERT INTO transactions (amount, ownerID) VALUES (100, 1);
 INSERT INTO transactions (amount, ownerID) VALUES (-500.25, 1);
+INSERT INTO transactions (amount, ownerID) VALUES (-35.75, 1);
 
+INSERT INTO transactions (amount, ownerID) VALUES (35.75, 2);
 
-SELECT * FROM card;
 
 SELECT * FROM transactions WHERE ownerID = 1;
-SELECT * FROM transactions;

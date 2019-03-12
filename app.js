@@ -1,13 +1,10 @@
-// Dates and times
-var moment = require("moment");
-
 // Prompt system
 var inquirer = require("inquirer");
 
 // Import the databse connection
 var connection = require("./db/db.js");
 
-// Generate FAKE CC numbers for new accounts 
+// Generate FAKE CC numbers for new accounts. 
 var generator = require('creditcard-generator');
 
 // Connect to db
@@ -24,6 +21,12 @@ var showCards = function(){
     });
 }
 
+// Converts input from the prompt to a dollar amount ready for the db
+var inputToDollar = function(money){
+    var number = Number(money.replace(/[^0-9.-]+/g,""));
+    return number;
+}
+
 // This displays the card table AND restarts the application.
 var viewCardsAndRestart = function(){
     connection.query("SELECT * FROM card", function(error, res){
@@ -33,10 +36,31 @@ var viewCardsAndRestart = function(){
     });
 }
 
+// Displays transactions for the card selected by ID
 var getTransactions = function(cardID){
-    console.log("This is the cardID: " + cardID);
+    connection.query("SELECT * FROM transactions WHERE ownerID = ?",
+    [cardID], function(error, res){
+        if (error) throw error;
+        console.table(res);
+        startApp();
+    });
 }
 
+// Query db to get card's balance so we can update it when purcahses or payments are made
+var getBalance = function(){
+    
+}
+
+// Let's make a purchase
+var makePurchase = function(cardID, purchaseAmt){
+    connection.query("INSERT INTO transactions SET amount = ?, ownerID = ?",
+        [purchaseAmt, cardID],
+        function (err, res) {
+            if (err) throw err;
+            console.log("New Purchase Recorded!");
+            startApp();
+        });
+}
 
 /*
 Create a new credit card with a FAKE generated CC number
@@ -57,11 +81,13 @@ var createCard = function (credLimit) {
 
 // Kick off the welcome screen and give initial prompts.
 var startApp = function () {
+
+
     inquirer.prompt([
         {
             name: "welcomePrompt",
             type: "list",
-            choices: ["Create an Account", "View Cards", "View Transactions", "Logout"],
+            choices: ["Create an Account", "View Cards", "Make a Purchase", "Make a Payment","View Transactions", "Logout"],
             message: "What would you like to do?"
         }
     ]).then(function (answer) {
@@ -76,8 +102,8 @@ var startApp = function () {
                         message: "Select a credit limit for this card"
                     }
                 ]).then(function (ans) {
-                    createCard(parseInt(ans.credLimit));
                     // Pass this to the createCard function parseInt(ans.credLimit)
+                    createCard(parseInt(ans.credLimit));
                 });
                 break;
 
@@ -86,13 +112,44 @@ var startApp = function () {
                 viewCardsAndRestart();
                 break;
 
-            case "View Transactions":
-                console.log("View transactions");
 
-                // First display the cards in a table so users know which card to select
-                
-                
+            case "Make a Purchase":
+
+            // First show the cards to the user
+            showCards();
+
                 // Prompt users for which card to choose
+                inquirer.prompt([
+                    {
+                        name: "cardID",
+                        type: "input",
+                        // If only buying something was this easy
+                        message: "\nEnter the ID for the card you would like to make a purchase with: \n \n"
+                    },
+                    {
+                        name: "purchaseAmt",
+                        type: "input",
+                        message: "How big of a purchase do you want to make? Enter a dollar amount: "
+                    }
+                ]).then(function(ans){
+                    makePurchase(ans.cardID, inputToDollar(ans.purchaseAmt));
+                });
+                break;
+            
+            case "Make a Payment":
+                console.log("Make a Payment");
+                break;
+
+
+
+
+
+            case "View Transactions":    
+               
+            // First show the cards to the user
+            showCards();
+
+            // Prompt users for which card to choose
                 inquirer.prompt([
                     {
                         name: "cardID",
@@ -101,9 +158,8 @@ var startApp = function () {
                     }
                 ]).then(function(ans){
                     console.log(ans.cardID);
+                    getTransactions(ans.cardID);
                 });
-
-                showCards();
 
                 break;
 
