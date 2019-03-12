@@ -1,6 +1,9 @@
 // Prompt system
 var inquirer = require("inquirer");
 
+// Format our data into a table
+var Table = require('cli-table');
+
 // Import the databse connection
 var connection = require("./db/db.js");
 
@@ -12,12 +15,34 @@ connection.connect(function (err) {
     if (err) throw err;
 });
 
+// clears the console window, helps with readability 
+var clear = function(){
+    console.log('\033[2J');
+}
+
+// Create our table for the card infomation
+var cardTable = new Table({
+    head: ['id', 'card_number', 'credit_limit', 'APR', 'created_at', 'balance']
+});
+
+// Create our table for the transaction information
+var transactionTable = new Table({
+    head: ['transID', 'amount', 'ownerID', 'created_at']
+});
+
 
 // This function displays the table with card info and does NOT restart the app. For display only.
 var showCards = function () {
+    // Clear the window - it's easier on the eyes
     connection.query("SELECT * FROM card", function (error, res) {
         if (error) throw error;
-        console.table(res);
+        res.forEach(function (res) {
+            cardTable.push(
+                [res.id, res.card_number, res.credit_limit, res.APR, res.created_at, res.balance]
+            );
+        });
+
+        console.log(cardTable.toString());
     });
 }
 
@@ -29,19 +54,36 @@ var inputToDollar = function (money) {
 
 // This displays the card table AND restarts the application.
 var viewCardsAndRestart = function () {
+    console.log('\033[2J');
     connection.query("SELECT * FROM card", function (error, res) {
         if (error) throw error;
-        console.table(res);
+
+        // Use the cli-table to format the data
+        res.forEach(function (res) {
+            cardTable.push(
+                [res.id, res.card_number, res.credit_limit, res.APR, res.created_at, res.balance]
+            );
+        });
+
+        console.log(cardTable.toString());
         startApp();
     });
 }
 
 // Displays transactions for the card selected by ID
 var getTransactions = function (cardID) {
+
     connection.query("SELECT * FROM transactions WHERE ownerID = ?",
         [cardID], function (error, res) {
             if (error) throw error;
-            console.table(res);
+            // Use the cli-table to format the data
+            res.forEach(function (res) {
+                transactionTable.push(
+                    [res.transID, res.amount, res.ownerID, res.created_at]
+                );
+            });
+
+            console.log(transactionTable.toString());
             startApp();
         });
 }
@@ -110,16 +152,17 @@ var createCard = function (credLimit) {
 }
 
 // Calculate Interest - 35% APR on all cards (based on the example given)
-var calcInterest = function(){
+var calcInterest = function () {
     console.log("We're calculating interest");
 
-    
+
 
 }
 
 
 // Kick off the welcome screen and give initial prompts.
 var startApp = function () {
+
 
     inquirer.prompt([
         {
@@ -132,6 +175,9 @@ var startApp = function () {
         switch (answer.welcomePrompt) {
             case "Create an Account":
                 // Prompt for details to create account
+                
+                // Clear the window - it's easier on the eyes
+                clear();
                 inquirer.prompt([
                     {
                         name: "credLimit",
@@ -147,7 +193,10 @@ var startApp = function () {
 
             // Display all information for available cards
             case "View Cards":
+            // Clear the window - it's easier on the eyes
+            clear();
                 viewCardsAndRestart();
+                
                 break;
 
 
@@ -155,6 +204,8 @@ var startApp = function () {
 
                 // First show the cards to the user
                 showCards();
+                // Clear the window - it's easier on the eyes
+                clear();
 
                 // Prompt users for which card to choose
                 inquirer.prompt([
@@ -179,6 +230,8 @@ var startApp = function () {
                 break;
 
             case "Make a Payment":
+            // Clear the window - it's easier on the eyes
+            clear();
                 // First show the cards to the user
                 showCards();
 
@@ -206,6 +259,8 @@ var startApp = function () {
 
 
             case "View Transactions":
+            // Clear the window - it's easier on the eyes
+            clear();
 
                 // First show the cards to the user
                 showCards();
@@ -225,6 +280,8 @@ var startApp = function () {
                 break;
 
             case "Logout":
+            // Clear the window - it's easier on the eyes
+            clear();
                 killApp();
         }
     })
