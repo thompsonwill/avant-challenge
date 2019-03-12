@@ -47,8 +47,31 @@ var getTransactions = function(cardID){
 }
 
 // Query db to get card's balance so we can update it when purcahses or payments are made
-var getBalance = function(){
-    
+var getBalance = function(cardID){
+    connection.query("SELECT balance FROM card WHERE id = ?",
+    [cardID], function(error, res){
+        if (error) throw error;
+        var balance = res[0].balance;
+    });
+}
+
+var getBalance2 = function(cardID, callback){
+    var query = "SELECT balance FROM card WHERE id = ?";
+    connection.query(query, [cardID], callback);
+}
+
+getBalance2(5, function(err, res){
+    console.log("THIS IS THE GET BALANCE OF ALL GET BALANCES " + res[0].balance);
+    var balance = res[0].balance
+    return balance;
+});
+
+
+
+
+// Send the new balance of the card to the database
+var updateBalance = function(cardID, newAmt){
+
 }
 
 // Let's make a purchase
@@ -81,7 +104,6 @@ var createCard = function (credLimit) {
 
 // Kick off the welcome screen and give initial prompts.
 var startApp = function () {
-
 
     inquirer.prompt([
         {
@@ -132,6 +154,7 @@ var startApp = function () {
                         message: "How big of a purchase do you want to make? Enter a dollar amount: "
                     }
                 ]).then(function(ans){
+                    // getBalance("THIS IS YOUR BALANCE " + ans.cardID);
                     makePurchase(ans.cardID, inputToDollar(ans.purchaseAmt));
                 });
                 break;
@@ -174,7 +197,6 @@ var killApp = function () {
     connection.end();
     console.log("Goodbye!")
 }
-
 
 
 
