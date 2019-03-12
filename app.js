@@ -46,6 +46,7 @@ var getTransactions = function (cardID) {
         });
 }
 
+// Consolidate the following two functions into one and validate for the operator
 
 // After a purchase increase balance
 var increaseBalance = function (cardID, purchaseAmt) {
