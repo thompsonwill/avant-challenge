@@ -14,22 +14,22 @@ connection.connect(function (err) {
 
 
 // This function displays the table with card info and does NOT restart the app. For display only.
-var showCards = function(){
-    connection.query("SELECT * FROM card", function(error, res){
+var showCards = function () {
+    connection.query("SELECT * FROM card", function (error, res) {
         if (error) throw error;
         console.table(res);
     });
 }
 
 // Converts input from the prompt to a dollar amount ready for the db
-var inputToDollar = function(money){
-    var number = Number(money.replace(/[^0-9.-]+/g,""));
+var inputToDollar = function (money) {
+    var number = Number(money.replace(/[^0-9.-]+/g, ""));
     return number;
 }
 
 // This displays the card table AND restarts the application.
-var viewCardsAndRestart = function(){
-    connection.query("SELECT * FROM card", function(error, res){
+var viewCardsAndRestart = function () {
+    connection.query("SELECT * FROM card", function (error, res) {
         if (error) throw error;
         console.table(res);
         startApp();
@@ -37,45 +37,47 @@ var viewCardsAndRestart = function(){
 }
 
 // Displays transactions for the card selected by ID
-var getTransactions = function(cardID){
+var getTransactions = function (cardID) {
     connection.query("SELECT * FROM transactions WHERE ownerID = ?",
-    [cardID], function(error, res){
-        if (error) throw error;
-        console.table(res);
-        startApp();
-    });
+        [cardID], function (error, res) {
+            if (error) throw error;
+            console.table(res);
+            startApp();
+        });
 }
 
 // Query db to get card's balance so we can update it when purcahses or payments are made
-var getBalance = function(cardID){
-    connection.query("SELECT balance FROM card WHERE id = ?",
-    [cardID], function(error, res){
-        if (error) throw error;
-        var balance = res[0].balance;
-    });
-}
-
-var getBalance2 = function(cardID, callback){
+var getBalance = function (cardID, callback) {
     var query = "SELECT balance FROM card WHERE id = ?";
     connection.query(query, [cardID], callback);
 }
 
-getBalance2(5, function(err, res){
+// This is a demo of getBalance()
+/* 
+getBalance(5, function(err, res){
     console.log("THIS IS THE GET BALANCE OF ALL GET BALANCES " + res[0].balance);
     var balance = res[0].balance
     return balance;
 });
-
+*/
 
 
 
 // Send the new balance of the card to the database
-var updateBalance = function(cardID, newAmt){
-
+var updateBalance = function (cardID, newAmt) {
+    connection.query("UPDATE card set balance = " + newAmt + " WHERE id = ?",
+        [cardID],
+        function (err, res) {
+            if (err) throw err;
+            console.log("New Balance Recorded!");
+            startApp();
+        });
 }
 
+
+
 // Let's make a purchase
-var makePurchase = function(cardID, purchaseAmt){
+var makePurchase = function (cardID, purchaseAmt) {
     connection.query("INSERT INTO transactions SET amount = ?, ownerID = ?",
         [purchaseAmt, cardID],
         function (err, res) {
@@ -109,7 +111,7 @@ var startApp = function () {
         {
             name: "welcomePrompt",
             type: "list",
-            choices: ["Create an Account", "View Cards", "Make a Purchase", "Make a Payment","View Transactions", "Logout"],
+            choices: ["Create an Account", "View Cards", "Make a Purchase", "Make a Payment", "View Transactions", "Logout"],
             message: "What would you like to do?"
         }
     ]).then(function (answer) {
@@ -129,7 +131,7 @@ var startApp = function () {
                 });
                 break;
 
-                // Display all information for available cards
+            // Display all information for available cards
             case "View Cards":
                 viewCardsAndRestart();
                 break;
@@ -137,8 +139,8 @@ var startApp = function () {
 
             case "Make a Purchase":
 
-            // First show the cards to the user
-            showCards();
+                // First show the cards to the user
+                showCards();
 
                 // Prompt users for which card to choose
                 inquirer.prompt([
@@ -153,12 +155,28 @@ var startApp = function () {
                         type: "input",
                         message: "How big of a purchase do you want to make? Enter a dollar amount: "
                     }
-                ]).then(function(ans){
-                    // getBalance("THIS IS YOUR BALANCE " + ans.cardID);
+                ]).then(function (ans) {
+                    // Get the current balance, store it in the variable
+                    getBalance(ans.cardID, function(err, res){
+                        var balance = parseInt(res[0].balance);
+                        var newBal = balance + inputToDollar(ans.purchaseAmt);
+                        return newBal;
+                    });
+                    
+                    console.log(thisBalance + " THIS IS THIS BALANCE")
+
+                    // Create a variable, add the new purchase amt to current balance and store it.
+                    var newBal = 5 + inputToDollar(ans.purchaseAmt);
+
+                    console.log("THIS IS THE NEW BALANCE YEAH THE SHOE: " + newBal)
+
+                    // Update the new balance (not the shoes)
+                    updateBalance(ans.cardID, newBal);
+
                     makePurchase(ans.cardID, inputToDollar(ans.purchaseAmt));
                 });
                 break;
-            
+
             case "Make a Payment":
                 console.log("Make a Payment");
                 break;
@@ -167,19 +185,19 @@ var startApp = function () {
 
 
 
-            case "View Transactions":    
-               
-            // First show the cards to the user
-            showCards();
+            case "View Transactions":
 
-            // Prompt users for which card to choose
+                // First show the cards to the user
+                showCards();
+
+                // Prompt users for which card to choose
                 inquirer.prompt([
                     {
                         name: "cardID",
                         type: "input",
                         message: "\nEnter the ID for the card you would like inspect: \n \n"
                     }
-                ]).then(function(ans){
+                ]).then(function (ans) {
                     console.log(ans.cardID);
                     getTransactions(ans.cardID);
                 });
@@ -195,7 +213,7 @@ var startApp = function () {
 // End db connection
 var killApp = function () {
     connection.end();
-    console.log("Goodbye!")
+    console.log("Goodbye!");
 }
 
 
