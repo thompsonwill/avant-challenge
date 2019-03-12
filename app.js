@@ -7,11 +7,6 @@ var connection = require("./db/db.js");
 // Generate FAKE CC numbers for new accounts. 
 var generator = require('creditcard-generator');
 
-
-// Attempting to store the results for balance in a variable
-var results = [];
-
-
 // Connect to db
 connection.connect(function (err) {
     if (err) throw err;
@@ -52,7 +47,7 @@ var getTransactions = function (cardID) {
 }
 
 
-// Send the new balance of the card to the database
+// Send the new balance of the card to the database. Takes the current balance and adds the new value of the purchase
 var updateBalance = function (cardID, purchaseAmt) {
     connection.query("UPDATE card SET balance = balance + ? WHERE id = ?",
     [purchaseAmt, cardID],
@@ -61,7 +56,6 @@ var updateBalance = function (cardID, purchaseAmt) {
         console.log("New Balance Recorded!");
     });
 }
-
 
 
 // Let's make a purchase
@@ -156,9 +150,6 @@ var startApp = function () {
             case "Make a Payment":
                 console.log("Make a Payment");
                 break;
-
-
-
 
 
             case "View Transactions":
