@@ -1,11 +1,13 @@
 # Technologies USed
-   Javascript/Node JS
-   mySQL
-   momentJS
-   Inquirer
+   Javascript/Node JS,
+   mySQL,
+   momentJS,
+   Inquirer,
 
 # Details
    I am currently on the instructional team for Northwestern University's Full-Stack bootcamp. Over the past week our students have been working with node JS and mySQL. I chose these technologies due to my immediate familiarity.
+
+   ![alt text](/img/main.PNG)
 
 # schema.sql
    The database structure I created for this challenge. Once it is set up, the creation and data manipulation can be done in the application.
