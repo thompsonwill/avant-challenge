@@ -8,7 +8,7 @@
    - Extract the zip file
    - cd into directory containing the project
    - Set up db according to schema.sql
-   - npm i
+   - npm install
    - node app.js
    - Create a credit card
 
