@@ -36,4 +36,5 @@
 
     (balance * .35 / 365 * dayUntilPaymentOrCharge) 
 
-Need to calculate interst between payments or purchases
+# HAVE USERS INPUT DATE OF TRANSACTION OR PAYMENT IN THE PROMPT
+# THIS WILL ALLOW ME TO CALCULATE EASIER WITHOUT USING PROMPTS

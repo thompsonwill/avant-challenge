@@ -190,10 +190,19 @@ var calcInterest = function (balance, rate, days) {
     var parsedFloat = parseFloat(interest);
     var totalInt = (parsedFloat + balance);
     return totalInt;
+    
 }
+
 
 // Testing with $500 balance, .35 APR and 30 days.
 console.log(calcInterest(500, .35, 30));
+
+
+var updateBalance = function(){
+
+}
+
+
 
 // Kick off the welcome screen and give initial prompts.
 var startApp = function () {
