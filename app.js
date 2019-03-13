@@ -10,6 +10,10 @@ var connection = require("./db/db.js");
 // Generate FAKE CC numbers for new accounts. 
 var generator = require('creditcard-generator');
 
+
+// Include moment for date/time calcs
+var moment = require('moment');
+
 // Connect to db
 connection.connect(function (err) {
     if (err) throw err;
@@ -33,7 +37,7 @@ var transactionTable = new Table({
 
 // This function displays the table with card info and does NOT restart the app. For display only.
 var showCards = function () {
-    // Clear the window - it's easier on the eyes
+    clear();
     connection.query("SELECT * FROM card", function (error, res) {
         if (error) throw error;
         res.forEach(function (res) {
@@ -54,7 +58,6 @@ var inputToDollar = function (money) {
 
 // This displays the card table AND restarts the application.
 var viewCardsAndRestart = function () {
-    console.log('\033[2J');
     connection.query("SELECT * FROM card", function (error, res) {
         if (error) throw error;
 
@@ -151,30 +154,39 @@ var createCard = function (credLimit) {
         });
 }
 
+
+
+var getDifference = function(date1, date2){
+   // var query = "SELECT DATEDIFF('" + date1 +"', '" + date2 +"') AS days;";
+   var query = "SELECT TIMESTAMPDIFF(SECOND,'"+ moment(date1).format("YYYY-MM-DD") +"','"+ moment(date2).format("YYYY-MM-DD") +"');"
+
+    connection.query(query,
+        [date1, date2], function (error, res) {
+            if (error) throw error;
+                console.log("THE DIFFERENCE BETWEEN TRANSACTIONS IN DAYS IS: " + JSON.stringify(res));
+        });
+}
+
 var lastTransaction = function(ownerID){
     connection.query("SELECT created_at FROM transactions WHERE ownerID = ?",
         [ownerID], function (error, res) {
             if (error) throw error;
 
-            res.forEach(function (res) {
-                console.log("LAST TRANSACTION: " + res.created_at);
-            });
-            
+
+            var i=0
+            for (i=0;i<=2;i++)
+            {
+                //console.log(res[i].created_at);
+            }
+        
         });
 }
 
-var getDifference = function(){
-    console.log("Getting the time difference");
-
-    
-}
-
-lastTransaction(2);
 
 // Calculate Interest - 35% APR on all cards (based on the example given)
 var calcInterest = function (balance, rate, days) {
     console.log("We're calculating interest");
-    var interest = balance * (rate / 365) * 30;
+    var interest = balance * (rate / 365) * days;
     var parsedFloat = parseFloat(interest);
     var totalInt = (parsedFloat + balance);
     return totalInt;
@@ -215,7 +227,7 @@ var startApp = function () {
             // Display all information for available cards
             case "View Cards":
             // Clear the window - it's easier on the eyes
-            clear();
+                clear();
                 viewCardsAndRestart();
                 
                 break;
@@ -280,8 +292,6 @@ var startApp = function () {
 
 
             case "View Transactions":
-            // Clear the window - it's easier on the eyes
-            clear();
 
                 // First show the cards to the user
                 showCards();
@@ -313,9 +323,6 @@ var killApp = function () {
     connection.end();
     console.log("Goodbye!");
 }
-
-
-
 
 startApp();
 // killApp();
