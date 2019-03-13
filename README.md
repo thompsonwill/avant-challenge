@@ -4,10 +4,20 @@
    momentJS,
    Inquirer
 
+# How to install
+   - Extract the zip file
+   - cd into directory containing the project
+   - Set up db according to schema.sql
+   - npm i
+   - node app.js
+   - Create a credit card
+
 # Details
    I am currently on the instructional team for Northwestern University's Full-Stack bootcamp. Over the past week our students have been working with node JS and mySQL. I chose these technologies due to my immediate familiarity. The applicaction can create an account, keep track of charges, keep track of payments, and provide the total outstanding balance on any given day. 
 
-   Create a card, make some payments and charges and use the Fast Forward functionality to simulate interest over time.
+   Create a card, make some payments and/or charges and use the Fast Forward functionality to simulate interest over time.
+
+   If you select View Cards, Make a Purchase/Payment, View Transactions, or Fast Forward, the application will show you a table of available cards which you can select by ID. 
 
    ![main window](/img/main.PNG)
 
@@ -29,9 +39,9 @@
    ![make a purchase](/img/purchase.PNG)
 
 # "Make a Payment"
-    Prompts users to choose which card (by ID) they would like to make a payment on. Second prompt asks for the payment amount.
+   Prompts users to choose which card (by ID) they would like to make a payment on. Second prompt asks for the payment amount.
 
-![make a payment](/img/payment.PNG)
+   ![make a payment](/img/payment.PNG)
 
 # "View Transactions"
    Displays a table of all transactions from a card specified by ID. Prompts users to select which card they would like to see a detailed view of transactions.
@@ -43,4 +53,3 @@
 
 # "Logout"
    Clears the window and returns you to your console
-

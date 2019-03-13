@@ -34,13 +34,13 @@ var transactionTable = new Table({
 });
 
 
-
-
 // This function displays the table with card info and does NOT restart the app. For display only.
 var showCards = function () {
     clear();
     connection.query("SELECT * FROM card", function (error, res) {
         if (error) throw error;
+
+
         res.forEach(function (res) {
             cardTable.push(
                 [res.id, res.card_number, res.credit_limit, res.APR, moment(res.created_at).format("YYYY-MM-DD"), res.balance]
@@ -50,6 +50,7 @@ var showCards = function () {
         console.log("\n"+cardTable.toString() + "\n");
     });
 }
+
 
 // Converts input from the prompt to a dollar amount ready for the db
 var inputToDollar = function (money) {
@@ -68,27 +69,42 @@ var viewCardsAndRestart = function () {
                 [res.id, res.card_number, res.credit_limit, res.APR, moment(res.created_at).format("YYYY-MM-DD"), res.balance]
             );
         });
-
+        clear();
         console.log(cardTable.toString());
         startApp();
     });
 }
 
+// Check if the db is empty when the app loads
+var getEmptyDb = function(){
+    connection.query("SELECT * FROM card", function (error, res) {
+        if (error) throw error;
+        if (!res.length){
+            console.log("\nThe DB is empty, please create a card")
+        }
+    });
+}
+
+
+
+
 // Displays transactions for the card selected by ID
 var getTransactions = function (cardID) {
-
     connection.query("SELECT * FROM transactions WHERE ownerID = ?",
         [cardID], function (error, res) {
             if (error) throw error;
+                isCardEmpty = true;
+
             // Use the cli-table to format the data
             res.forEach(function (res) {
                 transactionTable.push(
                     [res.transID, res.amount, res.ownerID, moment(res.created_at).format("YYYY-MM-DD")]
                 );
             });
-
+            clear();
             console.log(transactionTable.toString());
             startApp();
+
         });
 }
 
@@ -131,9 +147,8 @@ var calcInterest = function (balance, rate, days, cardID) {
 }
 
 
-// Fast forward to calculate interest
+// Fast forward to calculate interest, assuming interest is 35%
 var fastForward = function (time, cardID) {
-
     connection.query("SELECT balance FROM card WHERE id = ?",
         [cardID],
         function (err, res) {
@@ -146,7 +161,7 @@ var fastForward = function (time, cardID) {
 }
 
 
-// Consolidate the following two functions, validate for input
+// Consolidate the following two functions, check for purchase or payment and reflect operator
 
 // Let's make a purchase
 var makePurchase = function (cardID, purchaseAmt) {
@@ -173,7 +188,7 @@ var makePayment = function (cardID, purchaseAmt) {
 /*
 Create a new credit card with a FAKE generated CC number
 Credit limit is determined by the prompt - 3 options $1k, $5k, $10k
-APR is always 35 (35%)
+APR is 35 (35%)
 Balance starts as 0
 */
 var createCard = function (credLimit) {
@@ -185,8 +200,6 @@ var createCard = function (credLimit) {
             startApp();
         });
 }
-
-
 
 // Kick off the welcome screen and give initial prompts.
 var startApp = function () {
@@ -219,15 +232,12 @@ var startApp = function () {
 
             // Display all information for available cards
             case "View Cards":
-                // Clear the window - it's easier on the eyes
-                clear();
-                viewCardsAndRestart();
 
+                viewCardsAndRestart();
                 break;
 
 
             case "Make a Purchase":
-
                 // First show the cards to the user
                 showCards();
                 // Clear the window - it's easier on the eyes
@@ -294,12 +304,11 @@ var startApp = function () {
                     {
                         name: "cardID",
                         type: "input",
-                        message: "\nEnter the ID for the card you would like inspect: \n \n"
+                        message: "\nEnter the ID for the card you would like to see transactions for: \n \n"
                     }
                 ]).then(function (ans) {
                     getTransactions(ans.cardID);
                 });
-
                 break;
 
             case "Fast Forward, Calculate interest":
@@ -323,14 +332,13 @@ var startApp = function () {
                     // Choose days * card ID
                     fastForward(ans.days, ans.cardID);
                 });
-                
-                
-
                 break;
 
             case "Logout":
                 // Clear the window - it's easier on the eyes
                 clear();
+
+                // End the application
                 killApp();
         }
     })
@@ -341,6 +349,6 @@ var killApp = function () {
     connection.end();
     console.log("Goodbye!");
 }
-
+getEmptyDb();
+// Kickoff the app when it loads
 startApp();
-// killApp();
