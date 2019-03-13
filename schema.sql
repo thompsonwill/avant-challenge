@@ -36,3 +36,6 @@ INSERT INTO transactions (amount, ownerID) VALUES (35.75, 2);
 
 
 SELECT * FROM transactions WHERE ownerID = 1;
+
+SELECT DATEDIFF('2010-10-08', '2010-09-21') AS days;
+SELECT DATEDIFF('', '') AS days;
