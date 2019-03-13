@@ -43,11 +43,11 @@ var showCards = function () {
         if (error) throw error;
         res.forEach(function (res) {
             cardTable.push(
-                [res.id, res.card_number, res.credit_limit, res.APR, res.created_at, res.balance]
+                [res.id, res.card_number, res.credit_limit, res.APR, moment(res.created_at).format("YYYY-MM-DD"), res.balance]
             );
         });
 
-        console.log(cardTable.toString());
+        console.log("\n"+cardTable.toString() + "\n");
     });
 }
 
@@ -65,7 +65,7 @@ var viewCardsAndRestart = function () {
         // Use the cli-table to format the data
         res.forEach(function (res) {
             cardTable.push(
-                [res.id, res.card_number, res.credit_limit, res.APR, res.created_at, res.balance]
+                [res.id, res.card_number, res.credit_limit, res.APR, moment(res.created_at).format("YYYY-MM-DD"), res.balance]
             );
         });
 
@@ -83,7 +83,7 @@ var getTransactions = function (cardID) {
             // Use the cli-table to format the data
             res.forEach(function (res) {
                 transactionTable.push(
-                    [res.transID, res.amount, res.ownerID, res.created_at]
+                    [res.transID, res.amount, res.ownerID, moment(res.created_at).format("YYYY-MM-DD")]
                 );
             });
 
@@ -116,7 +116,6 @@ var decreaseBalance = function (cardID, purchaseAmt) {
 
 // Calculate Interest - 35% APR on all cards (based on the example given)
 var calcInterest = function (balance, rate, days, cardID) {
-    console.log("We're calculating interest");
     var interest = balance * (rate / 365) * days;
     var parsedFloat = parseFloat(interest);
     var totalInt = (balance);
@@ -128,14 +127,12 @@ var calcInterest = function (balance, rate, days, cardID) {
             console.log("New Balance Recorded! Thank you for your purchase");
         });
 
-    console.log(totalInt);
     return totalInt;
 }
 
 
 // Fast forward to calculate interest
 var fastForward = function (time, cardID) {
-    console.log("we traveling thru time");
 
     connection.query("SELECT balance FROM card WHERE id = ?",
         [cardID],
@@ -248,16 +245,11 @@ var startApp = function () {
                         name: "purchaseAmt",
                         type: "input",
                         message: "How big of a purchase do you want to make? Enter a dollar amount: "
-                    },
-                    {
-                        name: "date",
-                        type: "input",
-                        message: "What date is this purchase being made? Enter YYYY-MM-DD"
                     }
                 ]).then(function (ans) {
 
                     // Update the new balance (not the shoes)
-                    increaseBalance(ans.cardID, ans.purchaseAmt);
+                    increaseBalance(ans.cardID, inputToDollar(ans.purchaseAmt));
 
                     makePurchase(ans.cardID, inputToDollar(ans.purchaseAmt));
                 });
@@ -285,7 +277,7 @@ var startApp = function () {
                 ]).then(function (ans) {
 
                     // Update the new balance (not the shoes)
-                    decreaseBalance(ans.cardID, ans.purchaseAmt);
+                    decreaseBalance(ans.cardID, inputToDollar(ans.purchaseAmt));
 
                     makePayment(ans.cardID, inputToDollar(ans.purchaseAmt));
                 });
@@ -305,7 +297,6 @@ var startApp = function () {
                         message: "\nEnter the ID for the card you would like inspect: \n \n"
                     }
                 ]).then(function (ans) {
-                    console.log(ans.cardID);
                     getTransactions(ans.cardID);
                 });
 
@@ -321,7 +312,7 @@ var startApp = function () {
                     {
                         name: "cardID",
                         type: "input",
-                        message: "\nEnter the ID for the card you would like inspect: \n \n"
+                        message: "Enter the ID for the card you would like to send forward:"
                     },
                     {
                         name: "days",

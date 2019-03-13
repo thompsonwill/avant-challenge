@@ -1,41 +1,32 @@
-## Thanks for applying to Avant's Intern/New Grad Program for Software Engineers. Now, let the fun begin!
+# Technologies USed
+    Javascript/Node JS
+    mySQL
+    momentJS
+    Inquirer
 
-## By the looks of your resume, we think you would be a great candidate for the program. As mentioned in the job posting, as much as we would like to jump on the phone with every single applicant, we simply don't have the time.
+# Details
+    I am currently on the instructional team for Northwestern University's Full-Stack bootcamp. Over the past week our students have been working with node JS and mySQL. I chose these technologies due to my immediate familiarity. 
 
-## So, as next steps, we would like you to submit the challenge below through a zip file within 3 days of receiving this e-mail. You can complete the challenge in any language and you do not need a UI. PLEASE BE SURE TO INCLUDE YOUR LAST NAME FIRST WHEN NAMING AND SAVING YOUR ZIP FILE.
+# schema.sql
+    The databse structure I created for this challenge. Once it is set up, the creation and data manipulation can be done in the application.
 
-## This will allow us to gauge where you are technically and help make a decision on next steps of your interview process (this is your "go big or go home" moment).
+# "Create an Account" 
+    Generates a credit card and lets users choose credit limit (next version will have validation to ensure charges do not surpass credit limit). These cards are capable of purhcases, payments, and interest calculations
 
-## Given a credit card that functions as follows: 
-    Each card has an APR and Credit Limit.
-    Interest is calculated daily, starting the day after the account is opened, at the close of each day.
-    Calculated interest becomes due at the close every 30 days after the account has been opened.
-    e.g., asking for the total outstanding balance 15, 28, or 29 days after opening will give the outstanding balance, but asking for balance 30 days after opening will give the outstanding balance plus the accrued interest.
+# "View Cards" 
+    Displays accounts in the database in a table with the table heads: id, card_number, credit_limit, APR, created_at, balance. If selected more than once, duplicate cards can show. 
 
-## The software should be able to:
-    X Create an account (e.g. opening a new credit card) X
-    X Keep track of charges (e.g. card swipes) X
-    X Keep track of payments X
-    Provide the total outstanding balance as of any given day
+# "Make a Purchase"
+    Prompts users to choose which card (by ID) they would like to make a purchase on. Second prompt asks for the purchase amount. 
 
-## Test Scenario 1
-    A customer opens a credit card with a $1,000.00 limit at a 35% APR.
-    The customer charges $500 on opening day (outstanding balance becomes $500).
-    The total outstanding balance owed 30 days after opening should be $514.38.
-    500 * (0.35 / 365) * 30 = 14.38 
+# "Make a Payment"
+     Prompts users to choose which card (by ID) they would like to make a payment on. Second prompt asks for the payment amount.
 
-    balance * (.35 / 365) * 30
+# "View Transactions"
+    Displays a table of all available cards. Prompts users to select which card they would like to see a detailed view of transactions.
 
-## Test Scenario 2 
-    A customer opens a credit card with a $1,000.00 limit at a 35% APR.
-    The customer charges $500 on opening day (outstanding balance becomes $500).
-    15 days after opening, the customer pays $200 (outstanding balance becomes $300).
-    25 days after opening, the customer charges another $100 (outstanding balance becomes $400).
-    The total outstanding balance owed 30 days after opening should be $411.99.
-    (500 * 0.35 / 365 * 15) + (300 * 0.35 / 365 * 10) + (400 * 0.35 / 365 * 5) = 11.99
+# "Fast Forward, Calculate Interest"
+    Once a card is created, you can simulate interest calculations after 'x' amount of days have passed. The examples provided on the original instructions can be applied.
 
-    (balance * .35 / 365 * dayUntilPaymentOrCharge) 
-
-# HAVE USERS INPUT DATE OF TRANSACTION OR PAYMENT IN THE PROMPT
-# THIS WILL ALLOW ME TO CALCULATE EASIER WITHOUT USING mysql
-# YYY:DD:MM
+# "Logout" 
+    Clears the window and returns you to your console
