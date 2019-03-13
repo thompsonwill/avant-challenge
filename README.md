@@ -5,7 +5,9 @@
    Inquirer,
 
 # Details
-   I am currently on the instructional team for Northwestern University's Full-Stack bootcamp. Over the past week our students have been working with node JS and mySQL. I chose these technologies due to my immediate familiarity.
+   I am currently on the instructional team for Northwestern University's Full-Stack bootcamp. Over the past week our students have been working with node JS and mySQL. I chose these technologies due to my immediate familiarity. The applicaction can create an account, keep track of charges, keep track of payments, and provide the total outstanding balance on any given day. 
+
+   Create a card, make some payments and charges and use the Fast Forward functionality to simulate interest over time.
 
    ![main window](/img/main.PNG)
 
