@@ -7,12 +7,11 @@ var Table = require('cli-table');
 // Import the databse connection
 var connection = require("./db/db.js");
 
+// Helps format dates & times
+var moment = require("moment")
+
 // Generate FAKE CC numbers for new accounts. 
 var generator = require('creditcard-generator');
-
-
-// Include moment for date/time calcs
-var moment = require('moment');
 
 // Connect to db
 connection.connect(function (err) {
@@ -20,7 +19,7 @@ connection.connect(function (err) {
 });
 
 // clears the console window, helps with readability 
-var clear = function(){
+var clear = function () {
     console.log('\033[2J');
 }
 
@@ -33,6 +32,8 @@ var cardTable = new Table({
 var transactionTable = new Table({
     head: ['transID', 'amount', 'ownerID', 'created_at']
 });
+
+
 
 
 // This function displays the table with card info and does NOT restart the app. For display only.
@@ -113,6 +114,40 @@ var decreaseBalance = function (cardID, purchaseAmt) {
         });
 }
 
+// Calculate Interest - 35% APR on all cards (based on the example given)
+var calcInterest = function (balance, rate, days, cardID) {
+    console.log("We're calculating interest");
+    var interest = balance * (rate / 365) * days;
+    var parsedFloat = parseFloat(interest);
+    var totalInt = (balance);
+
+    connection.query("UPDATE card SET balance = balance + ? WHERE id = ?",
+        [parsedFloat, cardID],
+        function (err, res) {
+            if (err) throw err;
+            console.log("New Balance Recorded! Thank you for your purchase");
+        });
+
+    console.log(totalInt);
+    return totalInt;
+}
+
+
+// Fast forward to calculate interest
+var fastForward = function (time, cardID) {
+    console.log("we traveling thru time");
+
+    connection.query("SELECT balance FROM card WHERE id = ?",
+        [cardID],
+        function (err, res) {
+            if (err) throw err;
+            var oldBal = parseFloat(res[0].balance);
+            // Calculate interest based on the balance & time traveled
+            calcInterest(oldBal, .35, time, cardID);
+            startApp();
+        });
+}
+
 
 // Consolidate the following two functions, validate for input
 
@@ -156,68 +191,20 @@ var createCard = function (credLimit) {
 
 
 
-var getDifference = function(date1, date2){
-   // var query = "SELECT DATEDIFF('" + date1 +"', '" + date2 +"') AS days;";
-   var query = "SELECT TIMESTAMPDIFF(SECOND,'"+ moment(date1).format("YYYY-MM-DD") +"','"+ moment(date2).format("YYYY-MM-DD") +"');"
-
-    connection.query(query,
-        [date1, date2], function (error, res) {
-            if (error) throw error;
-                console.log("THE DIFFERENCE BETWEEN TRANSACTIONS IN DAYS IS: " + JSON.stringify(res));
-        });
-}
-
-var lastTransaction = function(ownerID){
-    connection.query("SELECT created_at FROM transactions WHERE ownerID = ?",
-        [ownerID], function (error, res) {
-            if (error) throw error;
-
-
-            var i=0
-            for (i=0;i<=2;i++)
-            {
-                //console.log(res[i].created_at);
-            }
-        
-        });
-}
-
-
-// Calculate Interest - 35% APR on all cards (based on the example given)
-var calcInterest = function (balance, rate, days) {
-    console.log("We're calculating interest");
-    var interest = balance * (rate / 365) * days;
-    var parsedFloat = parseFloat(interest);
-    var totalInt = (parsedFloat + balance);
-    return totalInt;
-    
-}
-
-
-// Testing with $500 balance, .35 APR and 30 days.
-console.log(calcInterest(500, .35, 30));
-
-
-var updateBalance = function(){
-
-}
-
-
-
 // Kick off the welcome screen and give initial prompts.
 var startApp = function () {
     inquirer.prompt([
         {
             name: "welcomePrompt",
             type: "list",
-            choices: ["Create an Account", "View Cards", "Make a Purchase", "Make a Payment", "View Transactions", "Logout"],
+            choices: ["Create an Account", "View Cards", "Make a Purchase", "Make a Payment", "View Transactions", "Fast Forward, Calculate interest", "Logout"],
             message: "What would you like to do?"
         }
     ]).then(function (answer) {
         switch (answer.welcomePrompt) {
             case "Create an Account":
                 // Prompt for details to create account
-                
+
                 // Clear the window - it's easier on the eyes
                 clear();
                 inquirer.prompt([
@@ -235,10 +222,10 @@ var startApp = function () {
 
             // Display all information for available cards
             case "View Cards":
-            // Clear the window - it's easier on the eyes
+                // Clear the window - it's easier on the eyes
                 clear();
                 viewCardsAndRestart();
-                
+
                 break;
 
 
@@ -261,6 +248,11 @@ var startApp = function () {
                         name: "purchaseAmt",
                         type: "input",
                         message: "How big of a purchase do you want to make? Enter a dollar amount: "
+                    },
+                    {
+                        name: "date",
+                        type: "input",
+                        message: "What date is this purchase being made? Enter YYYY-MM-DD"
                     }
                 ]).then(function (ans) {
 
@@ -272,8 +264,8 @@ var startApp = function () {
                 break;
 
             case "Make a Payment":
-            // Clear the window - it's easier on the eyes
-            clear();
+                // Clear the window - it's easier on the eyes
+                clear();
                 // First show the cards to the user
                 showCards();
 
@@ -319,9 +311,35 @@ var startApp = function () {
 
                 break;
 
+            case "Fast Forward, Calculate interest":
+
+                // First show the cards to the user
+                showCards();
+
+                // Prompt users for which card to choose
+                inquirer.prompt([
+                    {
+                        name: "cardID",
+                        type: "input",
+                        message: "\nEnter the ID for the card you would like inspect: \n \n"
+                    },
+                    {
+                        name: "days",
+                        type: "input",
+                        message: "How many days would you like to travel in time (to calculate interest)?"
+                    }
+                ]).then(function (ans) {
+                    // Choose days * card ID
+                    fastForward(ans.days, ans.cardID);
+                });
+                
+                
+
+                break;
+
             case "Logout":
-            // Clear the window - it's easier on the eyes
-            clear();
+                // Clear the window - it's easier on the eyes
+                clear();
                 killApp();
         }
     })
