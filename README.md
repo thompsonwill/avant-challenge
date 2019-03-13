@@ -31,7 +31,7 @@
 # "Make a Payment"
     Prompts users to choose which card (by ID) they would like to make a payment on. Second prompt asks for the payment amount.
 
-    ![make a payment](/img/payment.PNG)
+![make a payment](/img/payment.PNG)
 
 # "View Transactions"
    Displays a table of all available cards. Prompts users to select which card they would like to see a detailed view of transactions.
