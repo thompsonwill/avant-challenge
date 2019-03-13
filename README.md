@@ -34,7 +34,7 @@
 ![make a payment](/img/payment.PNG)
 
 # "View Transactions"
-   Displays a table of all available cards. Prompts users to select which card they would like to see a detailed view of transactions.
+   Displays a table of all transactions from a card specified by ID. Prompts users to select which card they would like to see a detailed view of transactions.
 
    ![see transactions](/img/transactions.PNG)
 
