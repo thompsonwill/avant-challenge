@@ -7,6 +7,7 @@
 # How to install
    - Extract the zip file
    - cd into directory containing the project
+   - Configure db/db.js with your mysql credentials
    - Set up db according to schema.sql
    - npm install
    - node app.js
